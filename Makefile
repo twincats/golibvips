@@ -3,9 +3,10 @@ all:
 	make run
 
 build:
-	CGO_CFLAGS_ALLOW=-Xpreprocessor go build .
+	set CGO_CFLAGS_ALLOW=-Xpreprocessor & go build .
 
 run:
+	make build 
 	golibvips
 
 test:

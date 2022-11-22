@@ -22,6 +22,7 @@ func checkError(err error) {
 	}
 }
 
+// this main is only to show example
 func main() {
 
 	libvips.Startup(nil)
@@ -30,11 +31,8 @@ func main() {
 	image1, err := libvips.NewImageFromFile("input.png")
 	checkError(err)
 
-	// Rotate the picture upright and reset EXIF orientation tag
-	// err = image1.AutoRotate()
-	// checkError(err)
-
-	err = image1.ResizeWithVScale(300, 100, libvips.KernelAuto)
+	// err = image1.Resize(0.4, libvips.KernelAuto)
+	err = image1.ResizeWidthPixel(1000, libvips.KernelAuto)
 	checkError(err)
 
 	ep := libvips.NewWebpExportParams()

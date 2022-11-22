@@ -40,10 +40,10 @@ const (
 	ImageTypeSVG     ImageType = C.SVG
 	ImageTypeTIFF    ImageType = C.TIFF
 	ImageTypeWEBP    ImageType = C.WEBP
-	ImageTypeHEIF    ImageType = C.HEIF
-	ImageTypeBMP     ImageType = C.BMP
-	ImageTypeAVIF    ImageType = C.AVIF
-	ImageTypeJP2K    ImageType = C.JP2K
+	// ImageTypeHEIF    ImageType = C.HEIF	// disabled need build vips hevc
+	ImageTypeBMP ImageType = C.BMP
+	// ImageTypeAVIF    ImageType = C.AVIF	// disabled need build vips hevc
+	ImageTypeJP2K ImageType = C.JP2K
 )
 
 var imageTypeExtensionMap = map[ImageType]string{
@@ -55,10 +55,10 @@ var imageTypeExtensionMap = map[ImageType]string{
 	ImageTypeSVG:    ".svg",
 	ImageTypeTIFF:   ".tiff",
 	ImageTypeWEBP:   ".webp",
-	ImageTypeHEIF:   ".heic",
-	ImageTypeBMP:    ".bmp",
-	ImageTypeAVIF:   ".avif",
-	ImageTypeJP2K:   ".jp2",
+	// ImageTypeHEIF:   ".heic",	// disabled need build vips hevc
+	ImageTypeBMP: ".bmp",
+	// ImageTypeAVIF:   ".avif",	// disabled need build vips hevc
+	ImageTypeJP2K: ".jp2",
 }
 
 // ImageTypes defines the various image types supported by govips
@@ -71,10 +71,10 @@ var ImageTypes = map[ImageType]string{
 	ImageTypeSVG:    "svg",
 	ImageTypeTIFF:   "tiff",
 	ImageTypeWEBP:   "webp",
-	ImageTypeHEIF:   "heif",
-	ImageTypeBMP:    "bmp",
-	ImageTypeAVIF:   "heif",
-	ImageTypeJP2K:   "jp2k",
+	// ImageTypeHEIF:   "heif", // disabled need build vips hevc
+	ImageTypeBMP: "bmp",
+	// ImageTypeAVIF:   "heif",	// disabled need build vips hevc
+	ImageTypeJP2K: "jp2k",
 }
 
 // TiffCompression represents method for compressing a tiff at export
@@ -145,10 +145,10 @@ func DetermineImageType(buf []byte) ImageType {
 		return ImageTypeTIFF
 	} else if isWEBP(buf) {
 		return ImageTypeWEBP
-	} else if isAVIF(buf) {
-		return ImageTypeAVIF
-	} else if isHEIF(buf) {
-		return ImageTypeHEIF
+		// } else if isAVIF(buf) {
+		// 	return ImageTypeAVIF	// disabled need build vips hevc
+		// } else if isHEIF(buf) {
+		// 	return ImageTypeHEIF	// disabled need build vips hevc
 	} else if isSVG(buf) {
 		return ImageTypeSVG
 	} else if isPDF(buf) {
@@ -195,21 +195,23 @@ func isWEBP(buf []byte) bool {
 
 // https://github.com/strukturag/libheif/blob/master/libheif/heif.cc
 var ftyp = []byte("ftyp")
-var heic = []byte("heic")
+
+// var heic = []byte("heic")	// disabled need build vips hevc
 var mif1 = []byte("mif1")
 var msf1 = []byte("msf1")
-var avif = []byte("avif")
 
-func isHEIF(buf []byte) bool {
-	return bytes.Equal(buf[4:8], ftyp) && (bytes.Equal(buf[8:12], heic) ||
-		bytes.Equal(buf[8:12], mif1) ||
-		bytes.Equal(buf[8:12], msf1)) ||
-		isAVIF(buf)
-}
+// var avif = []byte("avif")	// disabled need build vips hevc
 
-func isAVIF(buf []byte) bool {
-	return bytes.Equal(buf[4:8], ftyp) && bytes.Equal(buf[8:12], avif)
-}
+// func isHEIF(buf []byte) bool {
+// 	return bytes.Equal(buf[4:8], ftyp) && (bytes.Equal(buf[8:12], heic) ||
+// 		bytes.Equal(buf[8:12], mif1) ||
+// 		bytes.Equal(buf[8:12], msf1)) ||
+// 		isAVIF(buf)
+// }	// disabled need build vips hevc
+
+// func isAVIF(buf []byte) bool {
+// 	return bytes.Equal(buf[4:8], ftyp) && bytes.Equal(buf[8:12], avif)
+// }	// disabled need build vips hevc
 
 var svg = []byte("<svg")
 
@@ -323,7 +325,7 @@ func createImportParams(format ImageType, params *ImportParams) C.LoadParams {
 	maybeSetIntParam(params.Page, &p.page)
 	maybeSetIntParam(params.NumPages, &p.n)
 	maybeSetIntParam(params.JpegShrinkFactor, &p.jpegShrink)
-	maybeSetBoolParam(params.HeifThumbnail, &p.heifThumbnail)
+	// maybeSetBoolParam(params.HeifThumbnail, &p.heifThumbnail)	// disabled need build vips hevc
 	maybeSetBoolParam(params.SvgUnlimited, &p.svgUnlimited)
 
 	if params.Density.IsSet() {
@@ -398,39 +400,39 @@ func vipsSaveTIFFToBuffer(in *C.VipsImage, params TiffExportParams) ([]byte, err
 	return vipsSaveToBuffer(p)
 }
 
-func vipsSaveHEIFToBuffer(in *C.VipsImage, params HeifExportParams) ([]byte, error) {
-	incOpCounter("save_heif_buffer")
+// func vipsSaveHEIFToBuffer(in *C.VipsImage, params HeifExportParams) ([]byte, error) {
+// 	incOpCounter("save_heif_buffer")
 
-	p := C.create_save_params(C.HEIF)
-	p.inputImage = in
-	p.outputFormat = C.HEIF
-	p.quality = C.int(params.Quality)
-	p.heifLossless = C.int(boolToInt(params.Lossless))
-	p.heifBitdepth = C.int(params.Bitdepth)
-	p.heifEffort = C.int(params.Effort)
+// 	p := C.create_save_params(C.HEIF)
+// 	p.inputImage = in
+// 	p.outputFormat = C.HEIF
+// 	p.quality = C.int(params.Quality)
+// 	p.heifLossless = C.int(boolToInt(params.Lossless))
+// 	p.heifBitdepth = C.int(params.Bitdepth)
+// 	p.heifEffort = C.int(params.Effort)
 
-	return vipsSaveToBuffer(p)
-}
+// 	return vipsSaveToBuffer(p)
+// }	// disabled need build vips hevc
 
-func vipsSaveAVIFToBuffer(in *C.VipsImage, params AvifExportParams) ([]byte, error) {
-	incOpCounter("save_heif_buffer")
+// func vipsSaveAVIFToBuffer(in *C.VipsImage, params AvifExportParams) ([]byte, error) {
+// 	incOpCounter("save_heif_buffer")
 
-	// Speed was deprecated but we want to avoid breaking code that still uses it:
-	effort := params.Effort
-	if params.Speed != 0 {
-		effort = params.Speed
-	}
+// 	// Speed was deprecated but we want to avoid breaking code that still uses it:
+// 	effort := params.Effort
+// 	if params.Speed != 0 {
+// 		effort = params.Speed
+// 	}
 
-	p := C.create_save_params(C.AVIF)
-	p.inputImage = in
-	p.outputFormat = C.AVIF
-	p.quality = C.int(params.Quality)
-	p.heifLossless = C.int(boolToInt(params.Lossless))
-	p.heifBitdepth = C.int(params.Bitdepth)
-	p.heifEffort = C.int(effort)
+// 	p := C.create_save_params(C.AVIF)
+// 	p.inputImage = in
+// 	p.outputFormat = C.AVIF
+// 	p.quality = C.int(params.Quality)
+// 	p.heifLossless = C.int(boolToInt(params.Lossless))
+// 	p.heifBitdepth = C.int(params.Bitdepth)
+// 	p.heifEffort = C.int(effort)
 
-	return vipsSaveToBuffer(p)
-}
+// 	return vipsSaveToBuffer(p)
+// }	// disabled need build vips hevc
 
 func vipsSaveJP2KToBuffer(in *C.VipsImage, params Jp2kExportParams) ([]byte, error) {
 	incOpCounter("save_jp2k_buffer")

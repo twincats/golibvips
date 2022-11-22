@@ -179,9 +179,9 @@ func vipsDetermineImageTypeFromMetaLoader(in *C.VipsImage) ImageType {
 	if strings.HasPrefix(vipsLoader, "tiff") {
 		return ImageTypeTIFF
 	}
-	if strings.HasPrefix(vipsLoader, "heif") {
-		return ImageTypeHEIF
-	}
+	// if strings.HasPrefix(vipsLoader, "heif") {
+	// 	return ImageTypeHEIF
+	// }	// disabled need build vips hevc
 	if strings.HasPrefix(vipsLoader, "pdf") {
 		return ImageTypePDF
 	}

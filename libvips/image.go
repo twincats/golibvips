@@ -108,8 +108,8 @@ type ImportParams struct {
 	Density     IntParameter
 
 	JpegShrinkFactor IntParameter
-	HeifThumbnail    BoolParameter
-	SvgUnlimited     BoolParameter
+	// HeifThumbnail    BoolParameter	// disabled need build vips hevc
+	SvgUnlimited BoolParameter
 }
 
 // NewImportParams creates default ImportParams
@@ -143,9 +143,9 @@ func (i *ImportParams) OptionString() string {
 	if v := i.SvgUnlimited; v.IsSet() {
 		values = append(values, "unlimited="+boolToStr(v.Get()))
 	}
-	if v := i.HeifThumbnail; v.IsSet() {
-		values = append(values, "thumbnail="+boolToStr(v.Get()))
-	}
+	// if v := i.HeifThumbnail; v.IsSet() {
+	// 	values = append(values, "thumbnail="+boolToStr(v.Get()))
+	// }	// disabled need build vips hevc
 	return strings.Join(values, ",")
 }
 
@@ -327,22 +327,22 @@ func NewGifExportParams() *GifExportParams {
 }
 
 // HeifExportParams are options when exporting a HEIF to file or buffer
-type HeifExportParams struct {
-	Quality  int
-	Bitdepth int
-	Effort   int
-	Lossless bool
-}
+// type HeifExportParams struct {
+// 	Quality  int
+// 	Bitdepth int
+// 	Effort   int
+// 	Lossless bool
+// }	// disabled need build vips hevc
 
 // NewHeifExportParams creates default values for an export of a HEIF image.
-func NewHeifExportParams() *HeifExportParams {
-	return &HeifExportParams{
-		Quality:  80,
-		Bitdepth: 8,
-		Effort:   5,
-		Lossless: false,
-	}
-}
+// func NewHeifExportParams() *HeifExportParams {
+// 	return &HeifExportParams{
+// 		Quality:  80,
+// 		Bitdepth: 8,
+// 		Effort:   5,
+// 		Lossless: false,
+// 	}
+// }	// disabled need build vips hevc
 
 // AvifExportParams are options when exporting an AVIF to file or buffer.
 type AvifExportParams struct {
@@ -828,18 +828,18 @@ func (r *ImageRef) Export(params *ExportParams) ([]byte, *ImageMetadata, error) 
 			Quality:       params.Quality,
 			Compression:   compression,
 		})
-	case ImageTypeHEIF:
-		return r.ExportHeif(&HeifExportParams{
-			Quality:  params.Quality,
-			Lossless: params.Lossless,
-		})
-	case ImageTypeAVIF:
-		return r.ExportAvif(&AvifExportParams{
-			StripMetadata: params.StripMetadata,
-			Quality:       params.Quality,
-			Lossless:      params.Lossless,
-			Speed:         params.Speed,
-		})
+	// case ImageTypeHEIF:
+	// 	return r.ExportHeif(&HeifExportParams{
+	// 		Quality:  params.Quality,
+	// 		Lossless: params.Lossless,
+	// 	})	// disabled need build vips hevc
+	// case ImageTypeAVIF:
+	// 	return r.ExportAvif(&AvifExportParams{
+	// 		StripMetadata: params.StripMetadata,
+	// 		Quality:       params.Quality,
+	// 		Lossless:      params.Lossless,
+	// 		Speed:         params.Speed,
+	// 	})	// disabled need build vips hevc
 	default:
 		format = ImageTypeJPEG
 		return r.ExportJpeg(&JpegExportParams{
@@ -865,12 +865,12 @@ func (r *ImageRef) ExportNative() ([]byte, *ImageMetadata, error) {
 		return r.ExportPng(NewPngExportParams())
 	case ImageTypeWEBP:
 		return r.ExportWebp(NewWebpExportParams())
-	case ImageTypeHEIF:
-		return r.ExportHeif(NewHeifExportParams())
+	// case ImageTypeHEIF:
+	// 	return r.ExportHeif(NewHeifExportParams())	// disabled need build vips hevc
 	case ImageTypeTIFF:
 		return r.ExportTiff(NewTiffExportParams())
-	case ImageTypeAVIF:
-		return r.ExportAvif(NewAvifExportParams())
+	// case ImageTypeAVIF:
+	// 	return r.ExportAvif(NewAvifExportParams())	// disabled need build vips hevc
 	case ImageTypeJP2K:
 		return r.ExportJp2k(NewJp2kExportParams())
 	case ImageTypeGIF:
@@ -926,18 +926,18 @@ func (r *ImageRef) ExportWebp(params *WebpExportParams) ([]byte, *ImageMetadata,
 }
 
 // ExportHeif exports the image as HEIF to a buffer.
-func (r *ImageRef) ExportHeif(params *HeifExportParams) ([]byte, *ImageMetadata, error) {
-	if params == nil {
-		params = NewHeifExportParams()
-	}
+// func (r *ImageRef) ExportHeif(params *HeifExportParams) ([]byte, *ImageMetadata, error) {
+// 	if params == nil {
+// 		params = NewHeifExportParams()
+// 	}
 
-	buf, err := vipsSaveHEIFToBuffer(r.image, *params)
-	if err != nil {
-		return nil, nil, err
-	}
+// 	buf, err := vipsSaveHEIFToBuffer(r.image, *params)
+// 	if err != nil {
+// 		return nil, nil, err
+// 	}
 
-	return buf, r.newMetadata(ImageTypeHEIF), nil
-}
+// 	return buf, r.newMetadata(ImageTypeHEIF), nil
+// }	// disabled need build vips hevc
 
 // ExportTiff exports the image as TIFF to a buffer.
 func (r *ImageRef) ExportTiff(params *TiffExportParams) ([]byte, *ImageMetadata, error) {
@@ -968,18 +968,18 @@ func (r *ImageRef) ExportGIF(params *GifExportParams) ([]byte, *ImageMetadata, e
 }
 
 // ExportAvif exports the image as AVIF to a buffer.
-func (r *ImageRef) ExportAvif(params *AvifExportParams) ([]byte, *ImageMetadata, error) {
-	if params == nil {
-		params = NewAvifExportParams()
-	}
+// func (r *ImageRef) ExportAvif(params *AvifExportParams) ([]byte, *ImageMetadata, error) {
+// 	if params == nil {
+// 		params = NewAvifExportParams()
+// 	}
 
-	buf, err := vipsSaveAVIFToBuffer(r.image, *params)
-	if err != nil {
-		return nil, nil, err
-	}
+// 	buf, err := vipsSaveAVIFToBuffer(r.image, *params)
+// 	if err != nil {
+// 		return nil, nil, err
+// 	}
 
-	return buf, r.newMetadata(ImageTypeAVIF), nil
-}
+// 	return buf, r.newMetadata(ImageTypeAVIF), nil
+// }	// disabled need build vips hevc
 
 // ExportJp2k exports the image as JPEG2000 to a buffer.
 func (r *ImageRef) ExportJp2k(params *Jp2kExportParams) ([]byte, *ImageMetadata, error) {
@@ -1634,6 +1634,12 @@ func (r *ImageRef) Rank(width int, height int, index int) error {
 
 // Resize resizes the image based on the scale, maintaining aspect ratio
 func (r *ImageRef) Resize(scale float64, kernel Kernel) error {
+	return r.ResizeWithVScale(scale, -1, kernel)
+}
+
+// ResizeWidthPixel resizes the image based on the width pixel value, maintaining aspect ratio
+func (r *ImageRef) ResizeWidthPixel(widthPixel float64, kernel Kernel) error {
+	scale := (100 / float64(r.Width()) * widthPixel) / 100
 	return r.ResizeWithVScale(scale, -1, kernel)
 }
 
