@@ -15,7 +15,9 @@ windows search Edit the system environtment variable > Environtment Variables > 
 
 ### Step 3 : Install Golibvips golang package
 
-`go get -u https://github.com/twincats/golibvips/libvips`
+``` 
+go get -u github.com/twincats/golibvips/libvips 
+```
 
 ### Example usage
 
