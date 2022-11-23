@@ -666,7 +666,7 @@ func storeIccProfile(path string, data []byte) {
 }
 
 func temporaryDirectoryOrPanic() string {
-	temporaryDirectory, err := ioutil.TempDir("", "govips-")
+	temporaryDirectory, err := ioutil.TempDir("", "golibvips-")
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't create temporary directory: %v", err.Error()))
 	}

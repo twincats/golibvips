@@ -23,7 +23,7 @@ func Test_DefaultLogging(t *testing.T) {
 	LoggingSettings(nil, LogLevelInfo)
 
 	output := captureOutput(func() {
-		govipsLog("test", LogLevelInfo, "abcde12345")
+		golibvipsLog("test", LogLevelInfo, "abcde12345")
 	})
 	dateRegexp := regexp.MustCompile(`[0-9\/\:]+ `)
 	output = dateRegexp.ReplaceAllString(output, "")
@@ -35,14 +35,14 @@ func Test_LoggingVerbosity(t *testing.T) {
 	LoggingSettings(nil, LogLevelMessage)
 
 	output := captureOutput(func() {
-		govipsLog("test", LogLevelMessage, "abcde12345")
+		golibvipsLog("test", LogLevelMessage, "abcde12345")
 	})
 	dateRegexp := regexp.MustCompile(`[0-9\/\:]+ `)
 	output = dateRegexp.ReplaceAllString(output, "")
 	assert.Equal(t, "[test.message] abcde12345\n", output)
 
 	output2 := captureOutput(func() {
-		govipsLog("test", LogLevelInfo, "fghji67890")
+		golibvipsLog("test", LogLevelInfo, "fghji67890")
 	})
 	assert.Equal(t, "", output2)
 }
@@ -60,7 +60,7 @@ func Test_LoggingHandler(t *testing.T) {
 	}
 	LoggingSettings(testHandler, LogLevelInfo)
 
-	govipsLog("domain", LogLevelCritical, "abcde12345")
+	golibvipsLog("domain", LogLevelCritical, "abcde12345")
 	assert.Equal(t, "domain", testDomain)
 	assert.Equal(t, LogLevelCritical, testVerbosity)
 	assert.Equal(t, "abcde12345", testMessage)

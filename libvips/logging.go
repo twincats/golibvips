@@ -29,22 +29,22 @@ var (
 	currentLoggingOverridden      bool
 )
 
-// govipsLoggingHandler is the private bridge function exported to the C library
-// and called by glib and libvips for each logging message. It will call govipsLog
+// golibvipsLoggingHandler is the private bridge function exported to the C library
+// and called by glib and libvips for each logging message. It will call golibvipsLog
 // which in turn will filter based on verbosity and direct the messages to the
 // currently chosen LoggingHandlerFunction.
-//export govipsLoggingHandler
-func govipsLoggingHandler(messageDomain *C.char, messageLevel C.int, message *C.char) {
-	govipsLog(C.GoString(messageDomain), LogLevel(messageLevel), C.GoString(message))
+//export golibvipsLoggingHandler
+func golibvipsLoggingHandler(messageDomain *C.char, messageLevel C.int, message *C.char) {
+	golibvipsLog(C.GoString(messageDomain), LogLevel(messageLevel), C.GoString(message))
 }
 
 // LoggingHandlerFunction is a function which will be called for each log message.
-// By default, govips sends logging messages to os.Stderr. If you want to log elsewhere
+// By default, golibvips sends logging messages to os.Stderr. If you want to log elsewhere
 // such as to a file or to a state variable which you inspect yourself, define a new
 // logging handler function and set it via LoggingSettings().
 type LoggingHandlerFunction func(messageDomain string, messageLevel LogLevel, message string)
 
-// LoggingSettings sets the logging handler and logging verbosity for govips.
+// LoggingSettings sets the logging handler and logging verbosity for golibvips.
 // The handler function is the function which will be called for each log message.
 // You can define one yourself to log somewhere else besides the default (stderr).
 // Use nil as handler to use standard logging handler.
@@ -53,10 +53,10 @@ type LoggingHandlerFunction func(messageDomain string, messageLevel LogLevel, me
 // Suggest setting it to at least logLevelWarning. Use logLevelDebug for debugging.
 func LoggingSettings(handler LoggingHandlerFunction, verbosity LogLevel) {
 	currentLoggingOverridden = true
-	govipsLoggingSettings(handler, verbosity)
+	golibvipsLoggingSettings(handler, verbosity)
 }
 
-func govipsLoggingSettings(handler LoggingHandlerFunction, verbosity LogLevel) {
+func golibvipsLoggingSettings(handler LoggingHandlerFunction, verbosity LogLevel) {
 	if handler == nil {
 		currentLoggingHandlerFunction = defaultLoggingHandlerFunction
 	} else {
@@ -88,9 +88,9 @@ func defaultLoggingHandlerFunction(messageDomain string, messageLevel LogLevel, 
 	log.Printf("[%v.%v] %v", messageDomain, messageLevelDescription, message)
 }
 
-// govipsLog is the default function used to log debug or error messages internally in govips.
-// It's used by all govips functionality directly, as well as by glib and libvips via the C bridge.
-func govipsLog(messageDomain string, messageLevel LogLevel, message string) {
+// golibvipsLog is the default function used to log debug or error messages internally in golibvips.
+// It's used by all golibvips functionality directly, as well as by glib and libvips via the C bridge.
+func golibvipsLog(messageDomain string, messageLevel LogLevel, message string) {
 	if messageLevel <= currentLoggingVerbosity {
 		currentLoggingHandlerFunction(messageDomain, messageLevel, message)
 	}

@@ -10,4 +10,4 @@ run:
 	golibvips
 
 test:
-	set CGO_CFLAGS_ALLOW=-Xpreprocessor & go test -v ./libvips
+	set CGO_CFLAGS_ALLOW=-Xpreprocessor & go test -v ./...

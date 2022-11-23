@@ -725,7 +725,7 @@ func TestMemstats(t *testing.T) {
 	assert.NotNil(t, stats.Files)
 	assert.NotNil(t, stats.Mem)
 	assert.NotNil(t, stats.MemHigh)
-	govipsLog("govips", LogLevelInfo, fmt.Sprintf("MemoryStats: allocs: %d, files: %d, mem: %d, memhigh: %d", stats.Allocs, stats.Files, stats.Mem, stats.MemHigh))
+	golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("MemoryStats: allocs: %d, files: %d, mem: %d, memhigh: %d", stats.Allocs, stats.Files, stats.Mem, stats.MemHigh))
 }
 
 func TestBands(t *testing.T) {
@@ -877,7 +877,7 @@ func TestImageRef_Divide__Error(t *testing.T) {
 	err = image.ExtractBand(0, 2)
 	require.NoError(t, err)
 
-	denominator, err := NewImageFromFile(resources + "heic-24bit.heic")
+	denominator, err := NewImageFromFile(resources + "heic-24bit-not.jpg")
 	require.NoError(t, err)
 
 	err = image.Divide(denominator)

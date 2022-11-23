@@ -2,7 +2,7 @@ package libvips
 
 import "sync"
 
-// RuntimeStats is a data structure to house a map of govips operation counts
+// RuntimeStats is a data structure to house a map of golibvips operation counts
 type RuntimeStats struct {
 	OperationCounts map[string]int64
 }
@@ -39,7 +39,7 @@ func collectStats() chan struct{} {
 	return done
 }
 
-// ReadRuntimeStats returns operation counts for govips
+// ReadRuntimeStats returns operation counts for golibvips
 func ReadRuntimeStats(stats *RuntimeStats) {
 	statLock.RLock()
 	defer statLock.RUnlock()

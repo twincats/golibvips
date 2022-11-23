@@ -72,7 +72,7 @@ func Startup(config *Config) {
 	defer runtime.UnlockOSThread()
 
 	if running {
-		govipsLog("golibvips", LogLevelInfo, "warning libvips already started")
+		golibvipsLog("golibvips", LogLevelInfo, "warning libvips already started")
 		return
 	}
 
@@ -87,9 +87,9 @@ func Startup(config *Config) {
 	cName := C.CString("golibvips")
 	defer freeCString(cName)
 
-	// Initialize govips logging handler and verbosity filter to historical default
+	// Initialize golibvips logging handler and verbosity filter to historical default
 	if !currentLoggingOverridden {
-		govipsLoggingSettings(nil, LogLevelInfo)
+		golibvipsLoggingSettings(nil, LogLevelInfo)
 	}
 
 	// Override default glib logging handler to intercept logging messages
@@ -145,7 +145,7 @@ func Startup(config *Config) {
 		C.vips_cache_set_max_files(defaultMaxCacheFiles)
 	}
 
-	govipsLog("golibvips", LogLevelInfo, fmt.Sprintf("libvips %s started with concurrency=%d cache_max_files=%d cache_max_mem=%d cache_max=%d",
+	golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("libvips %s started with concurrency=%d cache_max_files=%d cache_max_mem=%d cache_max=%d",
 		Version,
 		int(C.vips_concurrency_get()),
 		int(C.vips_cache_get_max_files()),
@@ -163,7 +163,7 @@ func disableLogging() {
 	C.vips_unset_logging_handler()
 }
 
-// consoleLogging overrides the Govips logging handler and makes glib
+// consoleLogging overrides the golibvips logging handler and makes glib
 // use its default logging handler which outputs everything to console.
 // Needed for CI unit testing due to a macOS bug in Go (doesn't clean cgo callbacks on exit)
 func consoleLogging() {
@@ -185,7 +185,7 @@ func Shutdown() {
 	defer runtime.UnlockOSThread()
 
 	if !running {
-		govipsLog("golibvips", LogLevelInfo, "warning libvips not started")
+		golibvipsLog("golibvips", LogLevelInfo, "warning libvips not started")
 		return
 	}
 
@@ -214,9 +214,9 @@ func PrintCache() {
 
 // PrintObjectReport outputs all of the current internal objects in libvips
 func PrintObjectReport(label string) {
-	govipsLog("golibvips", LogLevelInfo, fmt.Sprintf("\n=======================================\nlibvips live objects: %s...\n", label))
+	golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("\n=======================================\nlibvips live objects: %s...\n", label))
 	C.vips_object_print_all()
-	govipsLog("golibvips", LogLevelInfo, "=======================================\n\n")
+	golibvipsLog("golibvips", LogLevelInfo, "=======================================\n\n")
 }
 
 // MemoryStats is a data structure that houses various memory statistics from ReadVipsMemStats()
@@ -237,7 +237,7 @@ func ReadVipsMemStats(stats *MemoryStats) {
 
 func startupIfNeeded() {
 	if !running {
-		govipsLog("golibvips", LogLevelInfo, "libvips was forcibly started automatically, consider calling Startup/Shutdown yourself")
+		golibvipsLog("golibvips", LogLevelInfo, "libvips was forcibly started automatically, consider calling Startup/Shutdown yourself")
 		Startup(nil)
 	}
 }
@@ -262,7 +262,7 @@ func initTypes() {
 			supportedImageTypes[k] = int(ret) != 0
 
 			if supportedImageTypes[k] {
-				govipsLog("golibvips", LogLevelInfo, fmt.Sprintf("registered image type loader type=%s", v))
+				golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("registered image type loader type=%s", v))
 			}
 		}
 	})

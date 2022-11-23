@@ -61,7 +61,7 @@ var imageTypeExtensionMap = map[ImageType]string{
 	ImageTypeJP2K: ".jp2",
 }
 
-// ImageTypes defines the various image types supported by govips
+// ImageTypes defines the various image types supported by golibvips
 var ImageTypes = map[ImageType]string{
 	ImageTypeGIF:    "gif",
 	ImageTypeJPEG:   "jpeg",
@@ -124,7 +124,7 @@ func (i ImageType) FileExt() string {
 	return ""
 }
 
-// IsTypeSupported checks whether given image type is supported by govips
+// IsTypeSupported checks whether given image type is supported by golibvips
 func IsTypeSupported(imageType ImageType) bool {
 	startupIfNeeded()
 
@@ -274,7 +274,7 @@ func vipsLoadFromBuffer(buf []byte, params *ImportParams) (*C.VipsImage, ImageTy
 	}
 
 	if !IsTypeSupported(currentType) {
-		govipsLog("govips", LogLevelInfo, fmt.Sprintf("failed to understand image format size=%d", len(src)))
+		golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("failed to understand image format size=%d", len(src)))
 		return nil, currentType, originalType, ErrUnsupportedImageFormat
 	}
 

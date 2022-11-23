@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"unsafe"
 )
 
 const GaussBlurDefaultMinAMpl = 0.2
@@ -176,7 +175,7 @@ type ExportParams struct {
 }
 
 // NewDefaultExportParams creates default values for an export when image type is not JPEG, PNG or WEBP.
-// By default, govips creates interlaced, lossy images with a quality of 80/100 and compression of 6/10.
+// By default, golibvips creates interlaced, lossy images with a quality of 80/100 and compression of 6/10.
 // As these are default values for a wide variety of image formats, their application varies.
 // Some formats use the quality parameters, some compression, etc.
 // Deprecated: Use format-specific params
@@ -192,7 +191,7 @@ func NewDefaultExportParams() *ExportParams {
 }
 
 // NewDefaultJPEGExportParams creates default values for an export of a JPEG image.
-// By default, govips creates interlaced JPEGs with a quality of 80/100.
+// By default, golibvips creates interlaced JPEGs with a quality of 80/100.
 // Deprecated: Use NewJpegExportParams
 func NewDefaultJPEGExportParams() *ExportParams {
 	return &ExportParams{
@@ -203,7 +202,7 @@ func NewDefaultJPEGExportParams() *ExportParams {
 }
 
 // NewDefaultPNGExportParams creates default values for an export of a PNG image.
-// By default, govips creates non-interlaced PNGs with a compression of 6/10.
+// By default, golibvips creates non-interlaced PNGs with a compression of 6/10.
 // Deprecated: Use NewPngExportParams
 func NewDefaultPNGExportParams() *ExportParams {
 	return &ExportParams{
@@ -214,7 +213,7 @@ func NewDefaultPNGExportParams() *ExportParams {
 }
 
 // NewDefaultWEBPExportParams creates default values for an export of a WEBP image.
-// By default, govips creates lossy images with a quality of 75/100.
+// By default, golibvips creates lossy images with a quality of 75/100.
 // Deprecated: Use NewWebpExportParams
 func NewDefaultWEBPExportParams() *ExportParams {
 	return &ExportParams{
@@ -239,7 +238,7 @@ type JpegExportParams struct {
 }
 
 // NewJpegExportParams creates default values for an export of a JPEG image.
-// By default, govips creates interlaced JPEGs with a quality of 80/100.
+// By default, golibvips creates interlaced JPEGs with a quality of 80/100.
 func NewJpegExportParams() *JpegExportParams {
 	return &JpegExportParams{
 		Quality:   80,
@@ -261,7 +260,7 @@ type PngExportParams struct {
 }
 
 // NewPngExportParams creates default values for an export of a PNG image.
-// By default, govips creates non-interlaced PNGs with a compression of 6/10.
+// By default, golibvips creates non-interlaced PNGs with a compression of 6/10.
 func NewPngExportParams() *PngExportParams {
 	return &PngExportParams{
 		Compression: 6,
@@ -282,7 +281,7 @@ type WebpExportParams struct {
 }
 
 // NewWebpExportParams creates default values for an export of a WEBP image.
-// By default, govips creates lossy images with a quality of 75/100.
+// By default, golibvips creates lossy images with a quality of 75/100.
 func NewWebpExportParams() *WebpExportParams {
 	return &WebpExportParams{
 		Quality:         75,
@@ -407,7 +406,7 @@ func LoadImageFromFile(file string, params *ImportParams) (*ImageRef, error) {
 		return nil, err
 	}
 
-	govipsLog("govips", LogLevelDebug, fmt.Sprintf("creating imageRef from file %s", file))
+	golibvipsLog("golibvips", LogLevelDebug, fmt.Sprintf("creating imageRef from file %s", file))
 	return LoadImageFromBuffer(buf, params)
 }
 
@@ -431,7 +430,7 @@ func LoadImageFromBuffer(buf []byte, params *ImportParams) (*ImageRef, error) {
 
 	ref := newImageRef(vipsImage, currentFormat, originalFormat, buf)
 
-	govipsLog("govips", LogLevelDebug, fmt.Sprintf("created imageRef %p", ref))
+	golibvipsLog("golibvips", LogLevelDebug, fmt.Sprintf("created imageRef %p", ref))
 	return ref, nil
 }
 
@@ -461,7 +460,7 @@ func LoadThumbnailFromFile(file string, width, height int, crop Interesting, siz
 
 	ref := newImageRef(vipsImage, format, format, nil)
 
-	govipsLog("govips", LogLevelDebug, fmt.Sprintf("created imageref %p", ref))
+	golibvipsLog("golibvips", LogLevelDebug, fmt.Sprintf("created imageref %p", ref))
 	return ref, nil
 }
 
@@ -481,7 +480,7 @@ func LoadThumbnailFromBuffer(buf []byte, width, height int, crop Interesting, si
 
 	ref := newImageRef(vipsImage, format, format, buf)
 
-	govipsLog("govips", LogLevelDebug, fmt.Sprintf("created imageref %p", ref))
+	golibvipsLog("golibvips", LogLevelDebug, fmt.Sprintf("created imageref %p", ref))
 	return ref, nil
 }
 
@@ -560,7 +559,7 @@ func newImageRef(vipsImage *C.VipsImage, currentFormat ImageType, originalFormat
 }
 
 func finalizeImage(ref *ImageRef) {
-	govipsLog("govips", LogLevelDebug, fmt.Sprintf("closing image %p", ref))
+	golibvipsLog("golibvips", LogLevelDebug, fmt.Sprintf("closing image %p", ref))
 	ref.Close()
 }
 
@@ -786,7 +785,7 @@ func (r *ImageRef) SetPageDelay(delay []int) error {
 
 // Export creates a byte array of the image for use.
 // The function returns a byte array that can be written to a file e.g. via ioutil.WriteFile().
-// N.B. govips does not currently have built-in support for directly exporting to a file.
+// N.B. golibvips does not currently have built-in support for directly exporting to a file.
 // The function also returns a copy of the image metadata as well as an error.
 // Deprecated: Use ExportNative or format-specific Export methods
 func (r *ImageRef) Export(params *ExportParams) ([]byte, *ImageMetadata, error) {
@@ -1337,7 +1336,7 @@ func (r *ImageRef) TransformICCProfile(outputProfilePath string) error {
 
 	out, err := vipsICCTransform(r.image, outputProfilePath, inputProfile, IntentPerceptual, depth, embedded)
 	if err != nil {
-		govipsLog("govips", LogLevelError, fmt.Sprintf("failed to do icc transform: %v", err.Error()))
+		golibvipsLog("golibvips", LogLevelError, fmt.Sprintf("failed to do icc transform: %v", err.Error()))
 		return err
 	}
 
@@ -1369,7 +1368,7 @@ func (r *ImageRef) OptimizeICCProfile() error {
 
 	out, err := vipsICCTransform(r.image, r.optimizedIccProfile, inputProfile, IntentPerceptual, depth, embedded)
 	if err != nil {
-		govipsLog("govips", LogLevelError, fmt.Sprintf("failed to do icc transform: %v", err.Error()))
+		golibvipsLog("golibvips", LogLevelError, fmt.Sprintf("failed to do icc transform: %v", err.Error()))
 		return err
 	}
 
@@ -1379,7 +1378,7 @@ func (r *ImageRef) OptimizeICCProfile() error {
 
 // RemoveMetadata removes the EXIF metadata from the image.
 // N.B. this function won't remove the ICC profile, orientation and pages metadata
-// because govips needs it to correctly display the image.
+// because golibvips needs it to correctly display the image.
 func (r *ImageRef) RemoveMetadata(keep ...string) error {
 	out, err := vipsCopyImage(r.image)
 	if err != nil {
@@ -1874,9 +1873,9 @@ func (r *ImageRef) ToBytes() ([]byte, error) {
 	if cData == nil {
 		return nil, errors.New("failed to write image to memory")
 	}
-	defer C.free(cData)
+	defer gFreePointer(cData)
 
-	data := C.GoBytes(unsafe.Pointer(cData), C.int(cSize))
+	data := C.GoBytes(cData, C.int(cSize))
 	return data, nil
 }
 

@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"testing"
 
-	vips "golibvips/libvips"
+	vips "github.com/twincats/golibvips/libvips"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -57,6 +57,6 @@ func TestMemoryLeak(t *testing.T) {
 
 	vips.ReadVipsMemStats(&after)
 	delta := after.Mem - before.Mem
-	t.Log(fmt.Sprintf("Memory usage: before %d, after %d, delta %d", before.Mem, after.Mem, delta))
+	t.Logf(fmt.Sprintf("Memory usage: before %d, after %d, delta %d", before.Mem, after.Mem, delta))
 	assert.True(t, delta < 10*1024*1024, "Memory usage delta too big: %d", delta)
 }
