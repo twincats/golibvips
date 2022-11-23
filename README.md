@@ -8,12 +8,12 @@ Golibvips is alternative libvips wrapper that work with windows by using vips Wi
 
 Download vips windows binary from here [vips-dev-w64-all-8.13.3.zip](https://github.com/libvips/build-win64-mxe/releases/download/v8.13.3/vips-dev-w64-all-8.13.3.zip)
 
-### Step 2 : Setting Environtment Variable
+#### Step 2 : Setting Environtment Variable
 
 extract `vips-dev-w64-all-8.13.3.zip` to folder, for example C:\vips-dev-8.13
 windows search Edit the system environtment variable > Environtment Variables > Path > edit > new > type `C:\vips-dev-8.13\bin`.
 
-### Step 3 : Install Golibvips golang package
+#### Step 3 : Install Golibvips golang package
 
 ``` 
 go get -u github.com/twincats/golibvips/libvips 
