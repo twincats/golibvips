@@ -45,6 +45,7 @@ var (
 	once                sync.Once
 	typeLoaders         = make(map[string]ImageType)
 	supportedImageTypes = make(map[ImageType]bool)
+	diableConsoleLog    = false
 )
 
 // Config allows fine-tuning of libvips library
@@ -56,6 +57,12 @@ type Config struct {
 	ReportLeaks      bool
 	CacheTrace       bool
 	CollectStats     bool
+}
+
+// DisableConsoleLogging hide VIPS logging and registered image type log.
+// Must run before startup.
+func DisableConsoleLogging() {
+	diableConsoleLog = true
 }
 
 // Startup sets up the libvips support and ensures the versions are correct. Pass in nil for
@@ -93,7 +100,9 @@ func Startup(config *Config) {
 	}
 
 	// Override default glib logging handler to intercept logging messages
-	enableLogging()
+	if !diableConsoleLog {
+		enableLogging()
+	}
 
 	err := C.vips_init(cName)
 	if err != 0 {
@@ -261,8 +270,10 @@ func initTypes() {
 
 			supportedImageTypes[k] = int(ret) != 0
 
-			if supportedImageTypes[k] {
-				golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("registered image type loader type=%s", v))
+			if !diableConsoleLog {
+				if supportedImageTypes[k] {
+					golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("registered image type loader type=%s", v))
+				}
 			}
 		}
 	})
