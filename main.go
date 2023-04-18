@@ -25,6 +25,8 @@ func checkError(err error) {
 
 // this main is only to show example
 func main() {
+	// disable console logging
+	libvips.DisableConsoleLogging()
 	// starting library
 	libvips.Startup(nil)
 	defer libvips.Shutdown()

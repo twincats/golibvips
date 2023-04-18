@@ -154,12 +154,14 @@ func Startup(config *Config) {
 		C.vips_cache_set_max_files(defaultMaxCacheFiles)
 	}
 
-	golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("libvips %s started with concurrency=%d cache_max_files=%d cache_max_mem=%d cache_max=%d",
-		Version,
-		int(C.vips_concurrency_get()),
-		int(C.vips_cache_get_max_files()),
-		int(C.vips_cache_get_max_mem()),
-		int(C.vips_cache_get_max())))
+	if !diableConsoleLog {
+		golibvipsLog("golibvips", LogLevelInfo, fmt.Sprintf("libvips %s started with concurrency=%d cache_max_files=%d cache_max_mem=%d cache_max=%d",
+			Version,
+			int(C.vips_concurrency_get()),
+			int(C.vips_cache_get_max_files()),
+			int(C.vips_cache_get_max_mem()),
+			int(C.vips_cache_get_max())))
+	}
 
 	initTypes()
 }
