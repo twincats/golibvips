@@ -10,7 +10,6 @@ package main
 import "C"
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/twincats/golibvips/libvips"
@@ -48,6 +47,6 @@ func main() {
 	checkError(err)
 
 	// save to file
-	err = ioutil.WriteFile("output.webp", image1bytes, 0644)
+	err = os.WriteFile("output.webp", image1bytes, 0644)
 	checkError(err)
 }
